@@ -15,7 +15,7 @@ public class JsonConverter {
 		StringBuilder sb = new StringBuilder();
 		Class<? extends Object> c = object.getClass();
 		
-		if(object instanceof Number) {
+		if(object instanceof Number || object instanceof Boolean) {
 			sb.append(toJson((Number)object));
 		}else if(object instanceof String || object instanceof Character) {
 			sb.append(toJson(object.toString()));
