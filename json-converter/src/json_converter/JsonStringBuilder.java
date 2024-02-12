@@ -95,7 +95,7 @@ public class JsonStringBuilder {
 	}
 	static private String toJson(Entry<?,?> entry) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(entry.getKey().toString())
+		sb.append(toJson(entry.getKey()))
 			.append(":")
 			.append(toJson(entry.getValue()));
 		return sb.toString();
@@ -117,7 +117,7 @@ public class JsonStringBuilder {
 		StringBuilder sb = new StringBuilder();
 		field.setAccessible(true);
 		try {
-			sb.append(field.getName())
+			sb.append(toJson(field.getName()))
 			.append(":")
 			.append(toJson(field.get(object)));
 		} catch (IllegalArgumentException | IllegalAccessException e) {
