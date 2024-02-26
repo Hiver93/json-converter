@@ -1,9 +1,18 @@
 package json_converter.tokenizer;
 
 public class TokenizerFactory {
+	
+	static private char findOpening(String jsonStr) {
+		int idx = 0;
+		while(jsonStr.charAt(idx) == ' ' || jsonStr.charAt(idx) == '\n') {
+			idx++;
+		}
+		return jsonStr.charAt(idx);
+	}
+	
 	static public JsonTokenizer getJsonTokenizer(String jsonStr) {
 		JsonTokenizer jsonTokenizer = null;
-		char opening = jsonStr.charAt(0);
+		char opening = findOpening(jsonStr);
 		if(opening == '{') {
 			jsonTokenizer = new JsonTokenizerKeyValue(jsonStr);
 		}

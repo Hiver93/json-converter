@@ -9,11 +9,13 @@ public class JsonTokenizerKeyValue implements JsonTokenizer {
 	public JsonTokenizerKeyValue(String jsonStr) {
 		this.jsonStr = jsonStr;
 		idx = 1;
+		setNextIdx();
 	}
 	
 	public void setJsonStr(String jsonStr) {
 		this.jsonStr = jsonStr;
 		idx = 1;
+		setNextIdx();
 	}
 	
 	private void setNextIdx() {
@@ -49,7 +51,7 @@ public class JsonTokenizerKeyValue implements JsonTokenizer {
 		return sb.toString();
 	}
 	
-	private String getSringToken() {
+	private String getStringToken() {
 		StringBuilder sb = new StringBuilder();
 		char c = jsonStr.charAt(idx);
 		sb.append(c);
@@ -70,22 +72,63 @@ public class JsonTokenizerKeyValue implements JsonTokenizer {
 		}
 		return sb.toString();
 	}
+
+	private String getListToken() {
+		StringBuilder sb = new StringBuilder();
+		int cnt = 1;
+		char c = jsonStr.charAt(idx);
+		sb.append(c);
+		idx++;
+		while(0 < cnt) {
+			c = jsonStr.charAt(idx); 
+			if(c == '[') {
+				cnt++;
+			}
+			if(c == ']') {
+				cnt--;
+			}
+			if(c == '\\') {
+				sb.append(c);
+				c = jsonStr.charAt(++idx);
+			}
+			sb.append(c);
+			idx++;
+		}
+		return sb.toString();
+	}
+	
+	private String getPrimitiveToken() {
+		StringBuilder sb = new StringBuilder();
+		char c = jsonStr.charAt(idx);
+		while(!(jsonStr.charAt(idx) == ' ' || jsonStr.charAt(idx) == '\n' || jsonStr.charAt(idx) == ',' ||jsonStr.charAt(idx) == ':')) {
+			if(c == '\\') {
+				sb.append(c);
+				c = jsonStr.charAt(++idx);
+			}
+			sb.append(c);
+			idx++;
+			c = jsonStr.charAt(idx);
+		}
+		return sb.toString();
+	}
 	
 	private String getToken() {
-		String token = null;
+		String token = null;	
+		
 		char opening = jsonStr.charAt(idx);
 		if(opening == '{') {
 			token = getObjectToken();
 		}
 		else if(opening == '[') {
-			
+			token = getListToken();
 		}
 		else if(opening == '\"') {
-			token = getSringToken();
+			token = getStringToken();
 		}
 		else {
-			
+			token = getPrimitiveToken();
 		}
+		setNextIdx();
 		return token;
 	}
 	
@@ -95,7 +138,9 @@ public class JsonTokenizerKeyValue implements JsonTokenizer {
 	
 	@Override
 	public String next() {
-		setNextIdx();
+		if(!hasMoreTokens()) {
+			return null;
+		}
 		String token = getToken(); 
 		return token;
 	}
