@@ -1,12 +1,12 @@
 package json_converter.tokenizer;
 
-public class JsonTokenizerObject implements JsonTokenizer {
+public class JsonTokenizerList implements JsonTokenizer {
 	private int idx = 0;
 	private String jsonStr;
-	private Parentheses parentheses = Parentheses.BRACES;
+	private Parentheses parentheses = Parentheses.BRAKETS;
 	
-	public JsonTokenizerObject() {}
-	public JsonTokenizerObject(String jsonStr) {
+	public JsonTokenizerList() {}
+	public JsonTokenizerList(String jsonStr) {
 		this.jsonStr = jsonStr;
 		init();
 	}
@@ -109,4 +109,5 @@ public class JsonTokenizerObject implements JsonTokenizer {
 		return token;
 	}
 	
+
 }

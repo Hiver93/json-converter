@@ -1,6 +1,6 @@
 package json_converter.tokenizer;
 
-public class JsonTokenizerString {
+public class JsonTokenizerString implements JsonTokenizer{
 	private int idx = 0;
 	private String jsonStr;
 	
@@ -10,12 +10,6 @@ public class JsonTokenizerString {
 		init();
 	}
 	
-	private void setIdxToBeginning() {
-		while(jsonStr.charAt(idx) == ' ' || jsonStr.charAt(idx) == '\n' || jsonStr.charAt(idx) == '\t' || jsonStr.charAt(idx) == '\r' ) {
-			idx++;
-		}
-	}
-	
 	private void setIdxNext() {
 		while(idx < jsonStr.length() && (jsonStr.charAt(idx) == ' ' || jsonStr.charAt(idx) == '\n' || jsonStr.charAt(idx) == '\t' || jsonStr.charAt(idx) == '\r')) {
 			idx++;
@@ -23,7 +17,6 @@ public class JsonTokenizerString {
 	}
 	
 	private void init() {
-		setIdxToBeginning();
 		setIdxNext();		
 	}
 	
@@ -45,10 +38,12 @@ public class JsonTokenizerString {
 		return sb.toString();
 	}
 	
+	@Override
 	public boolean hasMoreTokens() {
 		return idx < jsonStr.length();
 	}
 	
+	@Override
 	public String next() {
 		if(!hasMoreTokens()) {
 			return null;

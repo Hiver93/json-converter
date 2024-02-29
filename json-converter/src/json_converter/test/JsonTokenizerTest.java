@@ -8,9 +8,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import json_converter.tokenizer.JsonTokenizer;
 import json_converter.tokenizer.JsonTokenizerObject;
 import json_converter.tokenizer.JsonTokenizerPrimitive;
 import json_converter.tokenizer.JsonTokenizerString;
+import json_converter.tokenizer.factory.JsonTokenizerFactory;
 
 public class JsonTokenizerTest {
 	String objectJson = "{\"first\":{\"ab\":123, \"cd\":\"ef\\\"g\"}, \"second\":{}, \"third\":123 }";
@@ -22,7 +24,7 @@ public class JsonTokenizerTest {
 	
 	@Test
 	public void objectNext() {
-		JsonTokenizerObject tokenizer = new JsonTokenizerObject(objectJson);
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(objectJson);
 		
 		String token1 = tokenizer.next();
 		String expected1 = "\"first\"";
@@ -53,7 +55,11 @@ public class JsonTokenizerTest {
 		String token7 = tokenizer.next();
 		assertEquals(null,token7);
 		
-		tokenizer = new JsonTokenizerObject(listJson);
+	}
+	
+	@Test
+	public void listNext() {
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(listJson);
 		String listToken1 = tokenizer.next();
 		String listExpected1 = "{\"fist\": 1, \"second\": 2}";
 		assertEquals(listExpected1, listToken1);
@@ -69,8 +75,7 @@ public class JsonTokenizerTest {
 	
 	@Test
 	public void stringNext() {
-
-		JsonTokenizerString tokenizer = new JsonTokenizerString(stringJson);
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(stringJson);
 		String token1 = tokenizer.next();
 		String expected1 = "\" \\\"Hello world\\\" \\n \\\"Hello JSON\\\"\"";
 		assertEquals(expected1, token1);
@@ -79,7 +84,7 @@ public class JsonTokenizerTest {
 	@Test
 	public void primitiveNext() {
 		for(int i = 0; i < primitiveJsons.size(); ++i) {
-			JsonTokenizerPrimitive tokenizer = new JsonTokenizerPrimitive(primitiveJsons.get(i));
+			JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(primitiveJsons.get(i));
 			String token = tokenizer.next();
 			String expected = primitiveExpecteds.get(i);
 			assertEquals(expected, token);
@@ -90,7 +95,7 @@ public class JsonTokenizerTest {
 	
 	@Test
 	public void objectHasMoreTokens() {
-		JsonTokenizerObject tokenizer = new JsonTokenizerObject(objectJson);
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(objectJson);
 		assertTrue(tokenizer.hasMoreTokens());
 		
 		tokenizer.next();
@@ -110,8 +115,11 @@ public class JsonTokenizerTest {
 		
 		tokenizer.next();
 		assertFalse(tokenizer.hasMoreTokens());
-		
-		tokenizer = new JsonTokenizerObject(listJson);
+	}
+	
+	@Test
+	public void listHasMoreTokens() {		
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(listJson);
 		assertTrue(tokenizer.hasMoreTokens());
 		
 		tokenizer.next();
@@ -128,7 +136,7 @@ public class JsonTokenizerTest {
 
 	@Test
 	public void stringHasMoreTokens() {
-		JsonTokenizerString tokenizer = new JsonTokenizerString(stringJson);
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(stringJson);
 		assertTrue(tokenizer.hasMoreTokens());		
 		tokenizer.next();
 		
@@ -137,7 +145,7 @@ public class JsonTokenizerTest {
 
 	@Test
 	public void primitiveHasMoreTokens() {
-		JsonTokenizerPrimitive tokenizer = new JsonTokenizerPrimitive(primitiveJsons.get(1));
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(primitiveJsons.get(1));
 		assertTrue(tokenizer.hasMoreTokens());		
 		tokenizer.next();
 		
