@@ -1,5 +1,7 @@
 package json_converter.tokenizer;
 
+import json_converter.Parentheses;
+
 public class JsonTokenizerObject implements JsonTokenizer {
 	private int idx = 0;
 	private String jsonStr;
@@ -26,10 +28,6 @@ public class JsonTokenizerObject implements JsonTokenizer {
 		StringBuilder sb = new StringBuilder();
 		char c = jsonStr.charAt(idx);
 		while(!(jsonStr.charAt(idx) == ' ' || jsonStr.charAt(idx) == '\n' || jsonStr.charAt(idx) == '\t' || jsonStr.charAt(idx) == '\r'|| jsonStr.charAt(idx) == ',' ||jsonStr.charAt(idx) == ':')) {
-			if(c == '\\') {
-				sb.append(c);
-				c = jsonStr.charAt(++idx);
-			}
 			sb.append(c);
 			idx++;
 			c = jsonStr.charAt(idx);

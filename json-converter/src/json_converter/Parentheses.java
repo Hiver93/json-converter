@@ -1,4 +1,4 @@
-package json_converter.tokenizer;
+package json_converter;
 
 public enum Parentheses {
 	BRACES('{','}'), BRAKETS('[',']'), QUOTES('\"','\"');

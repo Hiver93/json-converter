@@ -1,5 +1,7 @@
 package json_converter.tokenizer;
 
+import json_converter.Parentheses;
+
 public class JsonTokenizerList implements JsonTokenizer {
 	private int idx = 0;
 	private String jsonStr;
