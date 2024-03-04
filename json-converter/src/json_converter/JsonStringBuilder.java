@@ -22,9 +22,12 @@ public class JsonStringBuilder {
 			sb.append(toJson((Number)object));
 		}else if(object instanceof Boolean) {
 			sb.append(toJson((Boolean)object));
-		}else if(object instanceof String || object instanceof Character) {
-			sb.append(toJson(object.toString()));
-		}else if(object instanceof List) {
+		}else if(object instanceof Character) {
+			sb.append(toJson((Character)object));
+		}else if(object instanceof String) {
+			
+		}
+		else if(object instanceof List) {
 			sb.append(toJson((List<? extends Object>)object));
 		}else if(c.isArray()) {
 			sb.append(toJsonAsArray(object));
@@ -48,8 +51,8 @@ public class JsonStringBuilder {
 	static private String toJson(Boolean b) {
 		return b.toString();
 	}	
-	static private String toJson(String str) {
-		return new StringBuilder().append("\"").append(str).append("\"").toString();
+	static private String toJson(Character ch) {
+		return new StringBuilder().append("\"").append(ch).append("\"").toString();
 	}
 	
 	static private String toJson(List<? extends Object> list) {
