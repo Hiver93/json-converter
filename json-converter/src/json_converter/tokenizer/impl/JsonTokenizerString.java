@@ -1,4 +1,6 @@
-package json_converter.tokenizer;
+package json_converter.tokenizer.impl;
+
+import json_converter.tokenizer.JsonTokenizer;
 
 public class JsonTokenizerString implements JsonTokenizer{
 	private int idx = 0;

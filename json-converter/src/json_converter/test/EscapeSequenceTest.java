@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Test;
 
-import json_converter.EscapeSequence;
+import json_converter.enums.EscapeSequence;
 
 public class EscapeSequenceTest {
 	private EscapeSequence[] escapeSequences = EscapeSequence.values(); 

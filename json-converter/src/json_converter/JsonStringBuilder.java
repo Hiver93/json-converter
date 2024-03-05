@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import json_converter.enums.EscapeSequence;
+
 public class JsonStringBuilder {
 	static public String toJson(Object object) {
 		if(object == null) {
@@ -53,7 +55,6 @@ public class JsonStringBuilder {
 	static private String toJson(Character ch) {
 		return new StringBuilder().append("\"").append(ch).append("\"").toString();
 	}
-	// 여기 처리해야 함
 	static private String toJson(String str) {	
 		String jsonStr = str.chars()
 			.mapToObj(

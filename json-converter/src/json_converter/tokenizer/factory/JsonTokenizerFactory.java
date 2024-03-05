@@ -1,11 +1,11 @@
 package json_converter.tokenizer.factory;
 
-import json_converter.Parentheses;
+import json_converter.enums.Parentheses;
 import json_converter.tokenizer.JsonTokenizer;
-import json_converter.tokenizer.JsonTokenizerList;
-import json_converter.tokenizer.JsonTokenizerObject;
-import json_converter.tokenizer.JsonTokenizerPrimitive;
-import json_converter.tokenizer.JsonTokenizerString;
+import json_converter.tokenizer.impl.JsonTokenizerList;
+import json_converter.tokenizer.impl.JsonTokenizerObject;
+import json_converter.tokenizer.impl.JsonTokenizerPrimitive;
+import json_converter.tokenizer.impl.JsonTokenizerString;
 
 public class JsonTokenizerFactory {
 	static public JsonTokenizer jsonTokenizer(String jsonStr) {

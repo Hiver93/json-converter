@@ -1,4 +1,4 @@
-package json_converter;
+package json_converter.enums;
 
 public enum EscapeSequence {
     DOUBLE_QUOTE('"', "\\\""),

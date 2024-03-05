@@ -9,10 +9,10 @@ import java.util.List;
 import org.junit.Test;
 
 import json_converter.tokenizer.JsonTokenizer;
-import json_converter.tokenizer.JsonTokenizerObject;
-import json_converter.tokenizer.JsonTokenizerPrimitive;
-import json_converter.tokenizer.JsonTokenizerString;
 import json_converter.tokenizer.factory.JsonTokenizerFactory;
+import json_converter.tokenizer.impl.JsonTokenizerObject;
+import json_converter.tokenizer.impl.JsonTokenizerPrimitive;
+import json_converter.tokenizer.impl.JsonTokenizerString;
 
 public class JsonTokenizerTest {
 	String objectJson = "{\"first\":{\"ab\":123, \"cd\":\"ef\\\"g\"}, \"second\":{}, \"third\":123 }";
