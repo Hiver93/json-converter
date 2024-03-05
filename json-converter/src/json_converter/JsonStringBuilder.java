@@ -25,9 +25,8 @@ public class JsonStringBuilder {
 		}else if(object instanceof Character) {
 			sb.append(toJson((Character)object));
 		}else if(object instanceof String) {
-			
-		}
-		else if(object instanceof List) {
+			sb.append(toJson((String)object));
+		}else if(object instanceof List) {
 			sb.append(toJson((List<? extends Object>)object));
 		}else if(c.isArray()) {
 			sb.append(toJsonAsArray(object));
@@ -53,6 +52,17 @@ public class JsonStringBuilder {
 	}	
 	static private String toJson(Character ch) {
 		return new StringBuilder().append("\"").append(ch).append("\"").toString();
+	}
+	// 여기 처리해야 함
+	static private String toJson(String str) {	
+		String jsonStr = str.chars()
+			.mapToObj(
+					c->EscapeSequence.isEscapeSequence((char)c) ? 
+							EscapeSequence.getEscapeSequenceByChar((char)c).getString() : String.valueOf((char)c))
+			.collect(Collectors.joining("","\"","\""));
+			
+		
+		return jsonStr;
 	}
 	
 	static private String toJson(List<? extends Object> list) {
