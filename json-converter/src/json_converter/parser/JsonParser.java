@@ -73,7 +73,7 @@ public class JsonParser {
 		}else if(jsonStr.length() == 1) {
 			return jsonStr.charAt(0);
 		}
-		throw new RuntimeException("Invalid character string");
+		throw new RuntimeException("Invalid character string: "+ jsonStr);
 		
 	}
 }
