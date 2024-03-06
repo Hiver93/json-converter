@@ -31,7 +31,7 @@ public class JsonParser {
 				
 			}
 			else if(Character.class.equals(c)) {
-				
+				object = (T)mapToChar(jsonStr);
 			}
 			else if(Boolean.class.equals(c)) {
 				
@@ -52,12 +52,12 @@ public class JsonParser {
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < jsonStr.length(); ++i) {
 			char c = jsonStr.charAt(i);
-			if(c == '\\') {
+			if(c == EscapeSequence.BACKSLASH.getCharacter()) {
 				sb.append(
 						EscapeSequence
 						.getEscapeSequenceByString(
 								new StringBuilder()
-								.append('\\').append(jsonStr.charAt(++i))
+								.append(EscapeSequence.BACKSLASH.getCharacter()).append(jsonStr.charAt(++i))
 								.toString())
 						.getCharacter());
 			}else {
@@ -65,5 +65,15 @@ public class JsonParser {
 			}
 		}
 		return sb.toString();
+	}
+	
+	private Character mapToChar(String jsonStr) {
+		if(EscapeSequence.isEscapeSequence(jsonStr)) {
+			return EscapeSequence.getEscapeSequenceByString(jsonStr).getCharacter();
+		}else if(jsonStr.length() == 1) {
+			return jsonStr.charAt(0);
+		}
+		throw new RuntimeException("Invalid character string");
+		
 	}
 }

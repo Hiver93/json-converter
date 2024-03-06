@@ -19,7 +19,8 @@ public class JsonParserTest {
 	}
 
 	@Test
-	public void mapFromJson() {
-		
+	public void mapToChar() {
+		JsonParser jp = new JsonParser();
+		assertEquals(strExpected, jp.parse(strJson, String.class));
 	}
 }
