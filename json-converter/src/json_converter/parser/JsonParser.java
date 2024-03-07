@@ -34,7 +34,7 @@ public class JsonParser {
 				object = (T)mapToChar(jsonStr);
 			}
 			else if(Boolean.class.equals(cl)) {
-				
+				object = (T)mapToBool(jsonStr);
 			}
 			else if(!cl.getName().startsWith("java")){
 				

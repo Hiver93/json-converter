@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import json_converter.parser.JsonParser;
 
 public class JsonParserTest {
+	JsonParser jp;
 	String strJson = "\"\"Hello World\"\\n\"Hello JSON\"\"";
 	String strExpected = "\"Hello World\"\n\"Hello JSON\"";
 	
@@ -20,9 +22,16 @@ public class JsonParserTest {
 	List<Class<?>> numClass = List.of(Integer.class, Double.class, Float.class, Byte.class,Long.class,Short.class);
 	List<Number> numExpecteds = List.of(-123, 123.123, 0.1f, (byte)127, 123L, (short)12);
 	
+	List<String> boolJsons = List.of("false","true");
+	List<Boolean> boolExpecteds = List.of(false,true);
+	
+	@Before
+	public void init() {
+		jp = new JsonParser();
+	}
+	
 	@Test 
 	public void mapToString() {		
-		JsonParser jp = new JsonParser();
 		assertEquals(strExpected, jp.parse(strJson, String.class));
 		
 		
@@ -30,7 +39,6 @@ public class JsonParserTest {
 
 	@Test
 	public void mapToChar() {
-		JsonParser jp = new JsonParser();
 		for(int i = 0; i < charJsons.size(); ++i) {
 			assertEquals(charExpecteds.get(i),jp.parse(charJsons.get(i), Character.class));
 		}
@@ -44,9 +52,15 @@ public class JsonParserTest {
 	
 	@Test
 	public void mapToNumber() {
-		JsonParser jp = new JsonParser();
 		for(int i = 0; i < numJsons.size(); ++i) {
 			assertEquals(numExpecteds.get(i),jp.parse(numJsons.get(i), numClass.get(i)));
+		}
+	}
+	
+	@Test
+	public void mapToBool() {
+		for(int i = 0; i < boolJsons.size(); ++i) {
+			assertEquals(boolExpecteds.get(i), jp.parse(boolJsons.get(i), Boolean.class));
 		}
 	}
 }
