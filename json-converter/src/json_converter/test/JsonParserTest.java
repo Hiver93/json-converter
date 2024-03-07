@@ -25,6 +25,10 @@ public class JsonParserTest {
 	List<String> boolJsons = List.of("false","true");
 	List<Boolean> boolExpecteds = List.of(false,true);
 	
+	List<String> primitiveJsons = List.of("-123","123.123","0.1","127","123","12","\"c\"","true");
+	List<Class<?>> primitiveClass = List.of(int.class, double.class, float.class, byte.class, long.class, short.class, char.class, boolean.class);
+	List<Object> primitiveExpecteds = List.of(-123, 123.123, 0.1f, (byte)127, 123L, (short)12, 'c', true);
+	
 	@Before
 	public void init() {
 		jp = new JsonParser();
@@ -61,6 +65,13 @@ public class JsonParserTest {
 	public void mapToBool() {
 		for(int i = 0; i < boolJsons.size(); ++i) {
 			assertEquals(boolExpecteds.get(i), jp.parse(boolJsons.get(i), Boolean.class));
+		}
+	}
+	
+	@Test
+	public void mapToPrimitive() {
+		for(int i = 0; i < primitiveJsons.size(); ++i) {
+			assertEquals(primitiveExpecteds.get(i), jp.parse(primitiveJsons.get(i), primitiveClass.get(i)));
 		}
 	}
 }

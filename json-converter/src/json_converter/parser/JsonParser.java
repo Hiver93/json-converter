@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import json_converter.enums.EscapeSequence;
+import json_converter.enums.PrimitiveWrapperMapping;
 
 public class JsonParser {	
 	public <T> T parse(String jsonStr, Class<T> cl) {
@@ -36,10 +37,10 @@ public class JsonParser {
 			else if(Boolean.class.equals(cl)) {
 				object = (T)mapToBool(jsonStr);
 			}
-			else if(!cl.getName().startsWith("java")){
-				
-			}
 			else if(cl.isPrimitive()) {
+				object = mapToPrimitive(jsonStr,cl);
+			}
+			else if(!cl.getName().startsWith("java")){
 				
 			}
 			else {
@@ -51,6 +52,10 @@ public class JsonParser {
 		return object;
 	}
 	
+	private <T>T mapToPrimitive(String jsonStr, Class<T> cl) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		return (T) parse(jsonStr, PrimitiveWrapperMapping.getWrapperByPrimitive(cl));
+	}
+
 	private Number mapToNumber(String jsonStr, Class<?> cl) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		Number num = (Number)cl.getDeclaredMethod("valueOf", String.class).invoke(null, jsonStr);
 		return num;
