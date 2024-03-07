@@ -20,11 +20,11 @@ public enum PrimitiveWrapperMapping {
         this.wrapper = wrapper;
     }
     
-    public Class<?> getPrimitiveType() {
+    public Class<?> getPrimitive() {
         return primitive;
     }
 
-    public Class<?> getWrapperType() {
+    public Class<?> getWrapper() {
         return wrapper;
     }
 
