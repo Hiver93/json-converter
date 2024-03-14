@@ -15,12 +15,12 @@ import json_converter.tokenizer.impl.JsonTokenizerPrimitive;
 import json_converter.tokenizer.impl.JsonTokenizerString;
 
 public class JsonTokenizerTest {
-	String objectJson = "{\"first\":{\"ab\":123, \"cd\":\"ef\\\"g\"}, \"second\":{}, \"third\":123 }";
+	String objectJson = "{\"first\":{\"ab\":123, \"cd\":\"ef\\\"g\"}, \"second\":{}, \"third\":123}";
 	String listJson = "[ {\"fist\": 1, \"second\": 2},{\"fist\": 3, \"second\": 4} ]";
 	String stringJson = "\" \\\"Hello world\\\" \\n \\\"Hello JSON\\\"\"";	
 	
-	List<String> primitiveJsons =  List.of("1234", "    c     ", "123.123", "true", "\nfalse");
-	List<String> primitiveExpecteds = List.of("1234", "c", "123.123", "true", "false");
+	List<String> primitiveJsons =  List.of("1234", "    c     ", "123.123", "true", "\nfalse","null");
+	List<String> primitiveExpecteds = List.of("1234", "c", "123.123", "true", "false","null");
 	
 	@Test
 	public void objectNext() {

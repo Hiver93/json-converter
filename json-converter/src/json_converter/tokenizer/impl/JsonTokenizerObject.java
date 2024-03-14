@@ -28,7 +28,7 @@ public class JsonTokenizerObject implements JsonTokenizer {
 	private String getPrimitiveToken() {
 		StringBuilder sb = new StringBuilder();
 		char c = jsonStr.charAt(idx);
-		while(!(jsonStr.charAt(idx) == ' ' || jsonStr.charAt(idx) == '\n' || jsonStr.charAt(idx) == '\t' || jsonStr.charAt(idx) == '\r'|| jsonStr.charAt(idx) == ',' ||jsonStr.charAt(idx) == ':')) {
+		while(!(jsonStr.charAt(idx) == ' ' || jsonStr.charAt(idx) == '\n' || jsonStr.charAt(idx) == '\t' || jsonStr.charAt(idx) == '\r'|| jsonStr.charAt(idx) == ',' ||jsonStr.charAt(idx) == ':'||jsonStr.charAt(idx)==this.parentheses.getClosing())) {
 			sb.append(c);
 			idx++;
 			c = jsonStr.charAt(idx);
