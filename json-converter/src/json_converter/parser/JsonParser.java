@@ -11,6 +11,9 @@ import json_converter.enums.PrimitiveWrapperMapping;
 
 public class JsonParser {	
 	public <T> T parse(String jsonStr, Class<T> cl) {
+		if(isNullValue(jsonStr)) {
+			return null;
+		}
 		T object = null;
 		try {
 			if(Map.class.isAssignableFrom(cl)) {
@@ -93,5 +96,9 @@ public class JsonParser {
 	
 	private Boolean mapToBool(String jsonStr) {
 		return Boolean.valueOf(jsonStr);
+	}
+	
+	private boolean isNullValue(String jsonStr) {
+		return jsonStr.equals("null");
 	}
 }
