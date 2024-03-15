@@ -89,7 +89,28 @@ public class JsonParser {
 		}
 		return (T) parse(jsonStr,typeToken.getType());
 	}
-
+	
+	public <T>T parse(String jsonStr){
+		T t = null;
+		jsonStr = jsonStr.trim();
+		if(isNullValue(jsonStr)) {
+			return null;
+		}		
+		Parentheses path = Parentheses.getParenthesesByOpening(jsonStr.trim().charAt(0));
+		if(path == Parentheses.BRACES) {
+			t = (T)parse(jsonStr, Map.class);
+		}
+		else if(path == Parentheses.BRAKETS) {
+			t = (T)parse(jsonStr, List.class);
+		}
+		else if(path == Parentheses.QUOTES) {
+			t = (T)parse(jsonStr, String.class);
+		}
+		else{
+			t = (T)parse(jsonStr, getPrimitiveClassByJson(jsonStr));
+		}
+		return t;
+	}
 	
 	private <T>T mapToPrimitive(String jsonStr, Class<T> cl) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		return (T) parse(jsonStr, PrimitiveWrapperMapping.getWrapperByPrimitive(cl));
@@ -142,5 +163,15 @@ public class JsonParser {
 			field.set(t, parse(tokenizer.next(),field.getType()));
 		}
 		return t;
+	}
+	private Class<?> getPrimitiveClassByJson(String jsonStr){
+		Class cl = null;
+		if(jsonStr.equals("true")||jsonStr.equals("false")) {
+			cl = Boolean.class;
+		}
+		else {
+			cl = Double.class;
+		}
+		return cl;
 	}
 }
