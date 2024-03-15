@@ -1,4 +1,4 @@
-package json_converter;
+package json_converter.stringbuilder;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import json_converter.enums.EscapeSequence;
 
 public class JsonStringBuilder {
-	static public String toJson(Object object) {
+	public String toJson(Object object) {
 		if(object == null) {
 			return "null";
 		}
@@ -46,16 +46,16 @@ public class JsonStringBuilder {
 		
 		return sb.toString();		
 	}
-	static private String toJson(Number n) {
+	private String toJson(Number n) {
 		return n.toString();
 	}
-	static private String toJson(Boolean b) {
+	private String toJson(Boolean b) {
 		return b.toString();
 	}	
-	static private String toJson(Character ch) {
+	private String toJson(Character ch) {
 		return new StringBuilder().append("\"").append(ch).append("\"").toString();
 	}
-	static private String toJson(String str) {	
+	private String toJson(String str) {	
 		String jsonStr = str.chars()
 			.mapToObj(
 					c->EscapeSequence.isEscapeSequence((char)c) ? 
@@ -66,38 +66,38 @@ public class JsonStringBuilder {
 		return jsonStr;
 	}
 	
-	static private String toJson(List<? extends Object> list) {
+	private String toJson(List<? extends Object> list) {
 		StringBuilder sb = new StringBuilder();
 		Stream<? extends Object> stream = list.stream();		
 		sb.append(
-				stream.map(JsonStringBuilder::toJson)
+				stream.map(this::toJson)
 				.collect(Collectors.joining(",","[","]"))
 		);
 		
 		return sb.toString();
 	}
 	
-	static private String toJsonAsArray(Object arr) {
+	private String toJsonAsArray(Object arr) {
 		StringBuilder sb = new StringBuilder();
 		Stream<Object> stream = IntStream.range(0,Array.getLength(arr))
 									.mapToObj(i -> Array.get(arr, i));
 		sb.append(
-				stream.map(JsonStringBuilder::toJson)
+				stream.map(this::toJson)
 				.collect(Collectors.joining(",","[","]"))
 		);
 		return sb.toString();
 	}
 	
-	static private String toJson(Set<? extends Object> set) {
+	private String toJson(Set<? extends Object> set) {
 		StringBuilder sb = new StringBuilder();
 		Stream<? extends Object> stream = set.stream();
 		sb.append(
-				stream.map(JsonStringBuilder::toJson)
+				stream.map(this::toJson)
 				.collect(Collectors.joining(",","[","]"))
 		);
 		return sb.toString();
 	};
-	static private String toJson(Map<? extends Object, ? extends Object> map) {
+	private String toJson(Map<? extends Object, ? extends Object> map) {
 		StringBuilder sb = new StringBuilder();
 		
 		Stream<?> stream = map.entrySet().stream();
@@ -107,7 +107,7 @@ public class JsonStringBuilder {
 		);
 		return sb.toString();
 	}
-	static private String toJson(Entry<?,?> entry) {
+	private String toJson(Entry<?,?> entry) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(toJson(entry.getKey()))
 			.append(":")
@@ -116,7 +116,7 @@ public class JsonStringBuilder {
 	}
 
 	
-	static private String toJson(Object object, Class c) {
+	private String toJson(Object object, Class c) {
 		StringBuilder sb = new StringBuilder();
 		Stream<Field> fieldStream = Stream.of(c.getDeclaredFields());
 		
@@ -127,7 +127,7 @@ public class JsonStringBuilder {
 		
 		return sb.toString();
 	}
-	static private String toJson(Object object, Field field){
+	private String toJson(Object object, Field field){
 		StringBuilder sb = new StringBuilder();
 		field.setAccessible(true);
 		try {
