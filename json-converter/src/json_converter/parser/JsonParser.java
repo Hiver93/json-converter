@@ -21,7 +21,7 @@ import json_converter.tokenizer.factory.JsonTokenizerFactory;
 
 public class JsonParser {	
 	public <T> T parse(String jsonStr, Class<T> cl) {
-		if(isNullValue(jsonStr)) {
+		if(JsonTokenizer.isNullValue(jsonStr)) {
 			return null;
 		}
 		T object = null;
@@ -30,7 +30,7 @@ public class JsonParser {
 				
 			}			
 			if(Map.class.isAssignableFrom(cl)) {
-				
+				object = mapToMap(jsonStr,cl);
 			}
 			else if(Set.class.isAssignableFrom(cl)) {		
 				
@@ -73,10 +73,6 @@ public class JsonParser {
 		}
 		return object;
 	}
-	
-	private boolean isNullValue(String jsonStr) {
-		return jsonStr.equals("null");
-	}
 
 	public <T>T parse(String jsonStr, Type type){
 //		T object = null;
@@ -93,23 +89,11 @@ public class JsonParser {
 	
 	public <T>T parse(String jsonStr){
 		T t = null;
-		jsonStr = jsonStr.trim();
-		if(isNullValue(jsonStr)) {
+		Class<?> cl = JsonTokenizer.inferClass(jsonStr);
+		if(cl == null) {
 			return null;
 		}		
-		Parentheses path = Parentheses.getParenthesesByOpening(jsonStr.trim().charAt(0));
-		if(path == Parentheses.BRACES) {
-			t = (T)parse(jsonStr, Map.class);
-		}
-		else if(path == Parentheses.BRAKETS) {
-			t = (T)parse(jsonStr, List.class);
-		}
-		else if(path == Parentheses.QUOTES) {
-			t = (T)parse(jsonStr, String.class);
-		}
-		else{
-			t = (T)parse(jsonStr, getPrimitiveClassByJson(jsonStr));
-		}
+		t = (T)parse(jsonStr,cl);
 		return t;
 	}
 	
@@ -174,14 +158,15 @@ public class JsonParser {
 		}
 		return t;
 	}
-	private Class<?> getPrimitiveClassByJson(String jsonStr){
-		Class cl = null;
-		if(jsonStr.equals("true")||jsonStr.equals("false")) {
-			cl = Boolean.class;
+	
+	private <T>T mapToMap(String jsonStr, Class<T> cl) {
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(jsonStr);
+		T t = InstanceFactory.newInstance(cl);
+		while(tokenizer.hasMoreTokens()) {
+			Object key = parse(tokenizer.next());
+			Object value = parse(tokenizer.next());
+			((Map)t).put(key, value);
 		}
-		else {
-			cl = Double.class;
-		}
-		return cl;
+		return t;
 	}
 }
