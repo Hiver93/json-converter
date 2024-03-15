@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.Map;
 import java.util.Queue;
@@ -28,21 +29,12 @@ public class JsonParser {
 		try {
 			if(GenericTypeContainer.isGenericContainer(cl)) {
 				
-			}			
+			}
 			if(Map.class.isAssignableFrom(cl)) {
 				object = mapToMap(jsonStr,cl);
 			}
-			else if(Set.class.isAssignableFrom(cl)) {		
-				
-			}
-			else if(List.class.isAssignableFrom(cl)) {	
-				object = mapToList(jsonStr,cl);
-			}
-			else if(Queue.class.isAssignableFrom(cl)) {
-				
-			}
-			else if(Deque.class.isAssignableFrom(cl)) {
-				
+			else if(Collection.class.isAssignableFrom(cl)) {
+				object = mapToCollection(jsonStr, cl);
 			}
 			else if(cl.isArray()) {
 				
@@ -150,11 +142,11 @@ public class JsonParser {
 		return t;
 	}
 	
-	private <T>T mapToList(String jsonStr, Class<T> cl){
+	private <T>T mapToCollection(String jsonStr, Class<T> cl){
 		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(jsonStr);
 		T t= InstanceFactory.newInstance(cl);
 		while(tokenizer.hasMoreTokens()) {
-			((List)t).add(parse(tokenizer.next()));
+			((Collection)t).add(parse(tokenizer.next()));
 		}
 		return t;
 	}
