@@ -1,9 +1,10 @@
 package json_converter.parser;
 
-import java.awt.List;
+import java.util.List;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Map;
 import java.util.Queue;
@@ -35,7 +36,7 @@ public class JsonParser {
 				
 			}
 			else if(List.class.isAssignableFrom(cl)) {	
-				
+				object = mapToList(jsonStr,cl);
 			}
 			else if(Queue.class.isAssignableFrom(cl)) {
 				
@@ -161,6 +162,15 @@ public class JsonParser {
 			Field field = cl.getDeclaredField(parse(tokenizer.next(),String.class));
 			field.setAccessible(true);
 			field.set(t, parse(tokenizer.next(),field.getType()));
+		}
+		return t;
+	}
+	
+	private <T>T mapToList(String jsonStr, Class<T> cl){
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(jsonStr);
+		T t= InstanceFactory.newInstance(cl);
+		while(tokenizer.hasMoreTokens()) {
+			((List)t).add(parse(tokenizer.next()));
 		}
 		return t;
 	}
