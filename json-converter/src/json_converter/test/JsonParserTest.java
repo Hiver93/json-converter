@@ -1,10 +1,13 @@
 package json_converter.test;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,27 +47,6 @@ public class JsonParserTest {
 		
 	}
 	JsonParser jp;
-	String strJson = "\"\"Hello World\"\\n\"Hello JSON\"\"";
-	String strExpected = "\"Hello World\"\n\"Hello JSON\"";
-	
-	List<String> charJsons = List.of("\"a\"","\"\\n\"","\"가\"","\"あ\"","\"\\\"\"");
-	List<Character> charExpecteds = List.of('a','\n','가','あ','\"');
-	
-	List<String> numJsons = List.of("-123","123.123","0.1","127","123","12");
-	List<Class<?>> numClass = List.of(Integer.class, Double.class, Float.class, Byte.class,Long.class,Short.class);
-	List<Number> numExpecteds = List.of(-123, 123.123, 0.1f, (byte)127, 123L, (short)12);
-	
-	List<String> boolJsons = List.of("false","true");
-	List<Boolean> boolExpecteds = List.of(false,true);
-	
-	List<String> primitiveJsons = List.of("-123","123.123","0.1","127","123","12","\"c\"","true");
-	List<Class<?>> primitiveClass = List.of(int.class, double.class, float.class, byte.class, long.class, short.class, char.class, boolean.class);
-	List<Object> primitiveExpecteds = List.of(-123, 123.123, 0.1f, (byte)127, 123L, (short)12, 'c', true);
-	
-	List<String> objectJsons = List.of("{\"i\":123,\"str\":\"thisisString\"}","{\"i\":123,\"str\":null}");
-	List<Type> objectClass = List.of(MyClass.class, new TypeToken<MyClass>() {}.getType());
-	List<Object> objectExpecteds = List.of(new MyClass(123,"thisisString"), new MyClass(123,null)); 
-	
 	@Before
 	public void init() {
 		jp = new JsonParser();
@@ -72,6 +54,8 @@ public class JsonParserTest {
 	
 	@Test 
 	public void mapToString() {		
+		String strJson = "\"\"Hello World\"\\n\"Hello JSON\"\"";
+		String strExpected = "\"Hello World\"\n\"Hello JSON\"";
 		assertEquals(strExpected, jp.parse(strJson, String.class));
 		
 		
@@ -79,6 +63,8 @@ public class JsonParserTest {
 
 	@Test
 	public void mapToChar() {
+		List<String> charJsons = List.of("\"a\"","\"\\n\"","\"가\"","\"あ\"","\"\\\"\"");
+		List<Character> charExpecteds = List.of('a','\n','가','あ','\"');
 		for(int i = 0; i < charJsons.size(); ++i) {
 			assertEquals(charExpecteds.get(i),jp.parse(charJsons.get(i), Character.class));
 		}
@@ -92,6 +78,9 @@ public class JsonParserTest {
 	
 	@Test
 	public void mapToNumber() {
+		List<String> numJsons = List.of("-123","123.123","0.1","127","123","12");
+		List<Class<?>> numClass = List.of(Integer.class, Double.class, Float.class, Byte.class,Long.class,Short.class);
+		List<Number> numExpecteds = List.of(-123, 123.123, 0.1f, (byte)127, 123L, (short)12);
 		for(int i = 0; i < numJsons.size(); ++i) {
 			assertEquals(numExpecteds.get(i),jp.parse(numJsons.get(i), numClass.get(i)));
 		}
@@ -99,6 +88,8 @@ public class JsonParserTest {
 	
 	@Test
 	public void mapToBool() {
+		List<String> boolJsons = List.of("false","true");
+		List<Boolean> boolExpecteds = List.of(false,true);
 		for(int i = 0; i < boolJsons.size(); ++i) {
 			assertEquals(boolExpecteds.get(i), jp.parse(boolJsons.get(i), Boolean.class));
 		}
@@ -106,6 +97,9 @@ public class JsonParserTest {
 	
 	@Test
 	public void mapToPrimitive() {
+		List<String> primitiveJsons = List.of("-123","123.123","0.1","127","123","12","\"c\"","true");
+		List<Class<?>> primitiveClass = List.of(int.class, double.class, float.class, byte.class, long.class, short.class, char.class, boolean.class);
+		List<Object> primitiveExpecteds = List.of(-123, 123.123, 0.1f, (byte)127, 123L, (short)12, 'c', true);
 		for(int i = 0; i < primitiveJsons.size(); ++i) {
 			assertEquals(primitiveExpecteds.get(i), jp.parse(primitiveJsons.get(i), primitiveClass.get(i)));
 		}
@@ -113,8 +107,27 @@ public class JsonParserTest {
 	
 	@Test
 	public void mapToObject() {
+		List<String> objectJsons = List.of("{\"i\":123,\"str\":\"thisisString\"}","{\"i\":123,\"str\":null}");
+		List<Type> objectClass = List.of(MyClass.class, new TypeToken<MyClass>() {}.getType());
+		List<Object> objectExpecteds = List.of(new MyClass(123,"thisisString"), new MyClass(123,null)); 
 		for(int i = 0; i < objectJsons.size(); ++i) {
 			assertEquals(objectExpecteds.get(i), jp.parse(objectJsons.get(i), objectClass.get(i)));
+		}
+	}
+	
+	@Test
+	public void mapToArray() {
+		List<String> jsons = List.of("[1,2,3]", "[1.2,3.4]", "[\"str\",\"hello\"]");
+		List<Class<?>> classes = List.of(int[].class,double[].class,String[].class);
+		List<Object> instanceExpecteds = List.of(new int[]{1,2,3},new double[]{1.2,3.4},new String[]{"str","hello"});
+		
+		for(int i = 0; i < jsons.size(); ++i) {					
+			Object obj = jp.parse(jsons.get(i),classes.get(i));
+			assertEquals(instanceExpecteds.get(i).getClass(), obj.getClass());
+			assertEquals(Array.getLength(instanceExpecteds.get(i)), Array.getLength(obj));
+			for(int j = 0; j < Array.getLength(obj); ++j) {
+				assertEquals(Array.get(instanceExpecteds.get(i), j),Array.get(obj, j));
+			}
 		}
 	}
 	
@@ -128,5 +141,6 @@ public class JsonParserTest {
 			assertEquals(classExpecteds.get(i),obj.getClass());
 			assertEquals(instanceExpecteds.get(i), obj);
 		}
+		assertNull(jp.parse("null"));
 	}
 }

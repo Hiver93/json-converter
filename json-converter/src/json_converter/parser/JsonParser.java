@@ -1,6 +1,7 @@
 package json_converter.parser;
 
 import java.util.List;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
@@ -37,7 +38,7 @@ public class JsonParser {
 				object = mapToCollection(jsonStr, cl);
 			}
 			else if(cl.isArray()) {
-				
+				object = mapToArray(jsonStr, cl);
 			}
 			else if(String.class.equals(cl)) {
 				object = (T)mapToString(jsonStr);
@@ -160,5 +161,19 @@ public class JsonParser {
 			((Map)t).put(key, value);
 		}
 		return t;
+	}
+
+	private <T>T mapToArray(String jsonStr, Class<T> cl) {
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(jsonStr);
+		List list = InstanceFactory.newInstance(List.class);
+		Class<?> componentType = cl.getComponentType();
+		while(tokenizer.hasMoreTokens()) {
+			list.add(parse(tokenizer.next(),componentType));
+		}
+		T arr = (T)Array.newInstance(componentType, list.size());
+		for(int i = 0; i < list.size(); ++i) {
+			Array.set(arr, i, list.get(i));
+		}
+		return arr;
 	}
 }
