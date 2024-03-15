@@ -23,15 +23,21 @@ public class JsonParserTest {
 	public static class MyClass{
 		int i;
 		String str;
+		List<String> strList;
 		@Override
 		public String toString() {
 			return "MyClass [i=" + i + ", str=" + str + "]";
 		}
 		public MyClass(){}
 		public MyClass(int i, String str) {this.i=i; this.str=str;}
+		public MyClass(int i, String str, List<String> strList) {
+			this.i = i;
+			this.str = str;
+			this.strList = strList;
+		}
 		@Override
 		public int hashCode() {
-			return Objects.hash(i, str);
+			return Objects.hash(i, str, strList);
 		}
 		@Override
 		public boolean equals(Object obj) {
@@ -42,8 +48,9 @@ public class JsonParserTest {
 			if (getClass() != obj.getClass())
 				return false;
 			MyClass other = (MyClass) obj;
-			return i == other.i && Objects.equals(str, other.str);
-		};
+			return i == other.i && Objects.equals(str, other.str) && Objects.equals(strList, other.strList);
+		}
+
 		
 	}
 	JsonParser jp;
@@ -101,17 +108,17 @@ public class JsonParserTest {
 		List<Class<?>> primitiveClass = List.of(int.class, double.class, float.class, byte.class, long.class, short.class, char.class, boolean.class);
 		List<Object> primitiveExpecteds = List.of(-123, 123.123, 0.1f, (byte)127, 123L, (short)12, 'c', true);
 		for(int i = 0; i < primitiveJsons.size(); ++i) {
-			assertEquals(primitiveExpecteds.get(i), jp.parse(primitiveJsons.get(i), primitiveClass.get(i)));
+			assertEquals(primitiveExpecteds.get(i), jp.parse(primitiveJsons.get(i), primitiveClass.get(i)),"not Equals: idx +"+i);
 		}
 	}
 	
 	@Test
 	public void mapToObject() {
-		List<String> objectJsons = List.of("{\"i\":123,\"str\":\"thisisString\"}","{\"i\":123,\"str\":null}");
-		List<Type> objectClass = List.of(MyClass.class, new TypeToken<MyClass>() {}.getType());
-		List<Object> objectExpecteds = List.of(new MyClass(123,"thisisString"), new MyClass(123,null)); 
+		List<String> objectJsons = List.of("{\"i\":123,\"str\":\"thisisString\"}","{\"i\":123,\"str\":null}", "{\"i\":123,\"str\":null, \"strList\":[\"hello\"]}");
+		List<Type> objectClass = List.of(MyClass.class, new TypeToken<MyClass>() {}.getType(), MyClass.class);
+		List<Object> objectExpecteds = List.of(new MyClass(123,"thisisString"), new MyClass(123,null), new MyClass(123,null,List.of("hello"))); 
 		for(int i = 0; i < objectJsons.size(); ++i) {
-			assertEquals(objectExpecteds.get(i), jp.parse(objectJsons.get(i), objectClass.get(i)));
+			assertEquals(objectExpecteds.get(i), jp.parse(objectJsons.get(i), objectClass.get(i)),"not Equals: idx +"+i);
 		}
 	}
 	
