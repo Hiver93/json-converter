@@ -1,6 +1,6 @@
 package json_converter.instance;
 
-import java.awt.List;
+import java.util.List;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
