@@ -3,11 +3,20 @@ package json_converter.parser;
 import java.awt.List;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
+import java.util.Deque;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import json_converter.enums.EscapeSequence;
+import json_converter.enums.Parentheses;
 import json_converter.enums.PrimitiveWrapperMapping;
+import json_converter.generic.container.GenericTypeContainer;
+import json_converter.generic.type.TypeToken;
+import json_converter.instance.InstanceFactory;
+import json_converter.tokenizer.JsonTokenizer;
+import json_converter.tokenizer.factory.JsonTokenizerFactory;
 
 public class JsonParser {	
 	public <T> T parse(String jsonStr, Class<T> cl) {
@@ -16,13 +25,22 @@ public class JsonParser {
 		}
 		T object = null;
 		try {
+			if(GenericTypeContainer.isGenericContainer(cl)) {
+				
+			}			
 			if(Map.class.isAssignableFrom(cl)) {
 				
 			}
-			else if(Set.class.isAssignableFrom(cl)) {
+			else if(Set.class.isAssignableFrom(cl)) {		
 				
 			}
-			else if(List.class.isAssignableFrom(cl)) {
+			else if(List.class.isAssignableFrom(cl)) {	
+				
+			}
+			else if(Queue.class.isAssignableFrom(cl)) {
+				
+			}
+			else if(Deque.class.isAssignableFrom(cl)) {
 				
 			}
 			else if(cl.isArray()) {
@@ -44,7 +62,7 @@ public class JsonParser {
 				object = mapToPrimitive(jsonStr,cl);
 			}
 			else if(!cl.getName().startsWith("java")){
-				
+				object = mapToObject(jsonStr,cl);
 			}
 			else {
 				throw new RuntimeException("Unsupported type format");
@@ -54,6 +72,24 @@ public class JsonParser {
 		}
 		return object;
 	}
+	
+	private boolean isNullValue(String jsonStr) {
+		return jsonStr.equals("null");
+	}
+
+	public <T>T parse(String jsonStr, Type type){
+//		T object = null;
+		
+		return parse(jsonStr,(Class<T>)type);
+	}
+	
+	public <T>T parse(String jsonStr, TypeToken<T> typeToken){
+		if(GenericTypeContainer.isGenericContainer(typeToken.getType())) {
+			GenericTypeContainer gc = new GenericTypeContainer(typeToken);
+		}
+		return (T) parse(jsonStr,typeToken.getType());
+	}
+
 	
 	private <T>T mapToPrimitive(String jsonStr, Class<T> cl) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		return (T) parse(jsonStr, PrimitiveWrapperMapping.getWrapperByPrimitive(cl));
@@ -97,8 +133,14 @@ public class JsonParser {
 	private Boolean mapToBool(String jsonStr) {
 		return Boolean.valueOf(jsonStr);
 	}
-	
-	private boolean isNullValue(String jsonStr) {
-		return jsonStr.equals("null");
+	private <T>T mapToObject(String jsonStr, Class<T> cl) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(jsonStr);
+		T t = InstanceFactory.newInstance(cl);
+		while(tokenizer.hasMoreTokens()) {
+			Field field = cl.getDeclaredField(parse(tokenizer.next(),String.class));
+			field.setAccessible(true);
+			field.set(t, parse(tokenizer.next(),field.getType()));
+		}
+		return t;
 	}
 }
