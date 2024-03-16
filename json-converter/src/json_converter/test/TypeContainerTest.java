@@ -13,8 +13,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import json_converter.generic.type.TypeToken;
 import json_converter.type.TypeContainer;
+import json_converter.type.TypeToken;
 
 public class TypeContainerTest {
 	static public class MyClass<T>{

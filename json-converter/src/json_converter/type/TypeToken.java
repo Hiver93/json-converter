@@ -1,4 +1,4 @@
-package json_converter.generic.type;
+package json_converter.type;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
