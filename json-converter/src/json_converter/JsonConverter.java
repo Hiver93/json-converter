@@ -1,18 +1,11 @@
 package json_converter;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.lang.reflect.Type;
 
 import json_converter.parser.JsonParser;
 import json_converter.stringbuilder.JsonStringBuilder;
+import json_converter.type.TypeContainer;
+import json_converter.type.TypeToken;
 
 public class JsonConverter {
 	public String toJson(Object object) {
@@ -20,6 +13,14 @@ public class JsonConverter {
 	}
 	
 	public <T>T fromJson(String jsonStr, Class<T> c) {
-		return new JsonParser().parse(jsonStr, c);
+		return new JsonParser().parse(jsonStr, new TypeContainer(c));
+	}
+	
+	public <T>T fromJson(String jsonStr, Type type){
+		return new JsonParser().parse(jsonStr, new TypeContainer(type));
+	}
+	
+	public <T>T fromJson(String jsonStr, TypeToken typeToken){
+		return new JsonParser().parse(jsonStr, new TypeContainer(typeToken.getType()));
 	}
 }
