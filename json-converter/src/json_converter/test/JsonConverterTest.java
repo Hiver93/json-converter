@@ -110,4 +110,9 @@ public class JsonConverterTest {
 			assertEquals(instanceExpecteds.get(i), jc.fromJson(jsons.get(i), types.get(i)));
 		}
 	}
+	
+	@Test
+	public void toJson() {
+		
+	}
 }

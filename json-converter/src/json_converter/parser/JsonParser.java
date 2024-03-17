@@ -47,6 +47,9 @@ public class JsonParser {
 			else if(tc.getBaseType().isPrimitive()) {
 				object = mapToPrimitive(jsonStr,tc);
 			}
+			else if(TypeVariable.class.isAssignableFrom(tc.getBaseType())) {
+				object = parse(jsonStr);
+			}
 			else if(!tc.getBaseType().getName().startsWith("java")){
 				object = mapToObject(jsonStr,tc);
 			}
@@ -65,7 +68,7 @@ public class JsonParser {
 		while(tokenizer.hasMoreTokens()) {
 			Field field = tc.getBaseType().getDeclaredField(parse(tokenizer.next(),new TypeContainer(String.class)));
 			field.setAccessible(true);
-			field.set(t, parse(tokenizer.next(), new TypeContainer(field.getType())));
+			field.set(t, parse(tokenizer.next(), new TypeContainer(field.getGenericType())));
 		}
 		return t;
 	}

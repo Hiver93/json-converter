@@ -3,6 +3,7 @@ package json_converter.type;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 public class TypeContainer {
 	private Type type;
@@ -19,6 +20,9 @@ public class TypeContainer {
 	public Class<?> getBaseType() {
 		if(this.isGenericContainer()) {
 			return (Class)((ParameterizedType)type).getRawType();
+		}
+		else if(this.type instanceof TypeVariable) {
+			return type.getClass();
 		}
 		else {
 			return (Class)type;

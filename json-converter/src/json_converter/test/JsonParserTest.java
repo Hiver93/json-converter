@@ -52,9 +52,37 @@ public class JsonParserTest {
 			MyClass other = (MyClass) obj;
 			return i == other.i && Objects.equals(str, other.str) && Objects.equals(strList, other.strList);
 		}
-
+	}
+	public static class MyGenericClass<T>{
+		int i;
+		String str;
+		T t;
+		public MyGenericClass() {}
+		public MyGenericClass(int i, String str, T t) {
+			super();
+			this.i = i;
+			this.str = str;
+			this.t = t;
+		}
+		@Override
+		public int hashCode() {
+			return Objects.hash(i, str, t);
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			MyGenericClass other = (MyGenericClass) obj;
+			return i == other.i && Objects.equals(str, other.str) && Objects.equals(t, other.t);
+		}
 		
 	}
+	
+	
 	JsonParser jp;
 	@Before
 	public void init() {
@@ -116,7 +144,9 @@ public class JsonParserTest {
 	
 	@Test
 	public void mapToObject() {
-		List<String> objectJsons = List.of("{\"i\":123,\"str\":\"thisisString\"}","{\"i\":123,\"str\":null}", "{\"i\":123,\"str\":null, \"strList\":[\"hello\"]}");
+		List<String> objectJsons = List.of("{\"i\":123,\"str\":\"thisisString\"}"
+				,"{\"i\":123,\"str\":null}", 
+				"{\"i\":123,\"str\":null, \"strList\":[\"hello\"]}");
 		List<Type> objectClass = List.of(MyClass.class, new TypeToken<MyClass>() {}.getType(), MyClass.class);
 		List<Object> objectExpecteds = List.of(new MyClass(123,"thisisString"), new MyClass(123,null), new MyClass(123,null,List.of("hello"))); 
 		for(int i = 0; i < objectJsons.size(); ++i) {
@@ -188,6 +218,17 @@ public class JsonParserTest {
 			assertEquals(typeExpecteds.get(i), list.getClass());
 			assertEquals(listExpecteds.get(i), list);
 			assertEquals(elemTypeExpecteds.get(i), list.get(0).getClass());
+		}
+	}
+	
+	@Test
+	public void mapTogenericObject() {
+		List<String> jsons = List.of("{\"i\":123, \"str\":\"a\", \"t\":345}");
+		List<Type> types = List.of(new TypeToken<MyGenericClass<Integer>>() {}.getType());
+		List<Object> instanceExpecteds = List.of(new MyGenericClass<Integer>(123,"a",345));
+	
+		for(int i =0; i < jsons.size(); ++i) {
+			Object instance = jp.parse(jsons.get(i), new TypeContainer(types.get(i)));
 		}
 	}
 }
