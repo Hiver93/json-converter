@@ -8,19 +8,27 @@ import json_converter.type.TypeContainer;
 import json_converter.type.TypeToken;
 
 public class JsonConverter {
-	public String toJson(Object object) {
-		return new JsonStringBuilder().toJson(object);		
+	JsonStringBuilder jsonStringBuilder;
+	JsonParser jsonParser;
+	
+	public JsonConverter() {
+		jsonStringBuilder = new JsonStringBuilder();
+		jsonParser = new JsonParser();
 	}
 	
-	public <T>T fromJson(String jsonStr, Class<T> c) {
-		return new JsonParser().parse(jsonStr, new TypeContainer(c));
+	public String toJson(Object object) {
+		return jsonStringBuilder.toJson(object);		
+	}
+	
+	public <T>T fromJson(String jsonStr, Class<T> cl) {
+		return jsonParser.parse(jsonStr, cl);
 	}
 	
 	public <T>T fromJson(String jsonStr, Type type){
-		return new JsonParser().parse(jsonStr, new TypeContainer(type));
+		return jsonParser.parse(jsonStr, type);
 	}
 	
-	public <T>T fromJson(String jsonStr, TypeToken typeToken){
-		return new JsonParser().parse(jsonStr, new TypeContainer(typeToken.getType()));
+	public <T>T fromJson(String jsonStr, TypeToken<?> typeToken){
+		return jsonParser.parse(jsonStr, typeToken);
 	}
 }

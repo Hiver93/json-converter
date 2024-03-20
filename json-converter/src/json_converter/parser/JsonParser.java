@@ -3,6 +3,7 @@ package json_converter.parser;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +15,7 @@ import json_converter.instance.InstanceFactory;
 import json_converter.tokenizer.JsonTokenizer;
 import json_converter.tokenizer.factory.JsonTokenizerFactory;
 import json_converter.type.TypeContainer;
+import json_converter.type.TypeToken;
 
 public class JsonParser {	
 	
@@ -60,6 +62,14 @@ public class JsonParser {
 			throw new RuntimeException(e.getMessage(),e);
 		}
 		return object;
+	}
+	
+	public <T>T parse(String jsonStr, Type type){
+		return parse(jsonStr, new TypeContainer(type));
+	}
+	
+	public <T>T parse(String jsonStr, TypeToken<?> typeToken){
+		return parse(jsonStr, new TypeContainer(typeToken.getType()));
 	}
 	
 	private <T>T mapToObject(String jsonStr, TypeContainer tc) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
