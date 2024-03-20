@@ -229,6 +229,7 @@ public class JsonParserTest {
 	
 		for(int i =0; i < jsons.size(); ++i) {
 			Object instance = jp.parse(jsons.get(i), new TypeContainer(types.get(i)));
+			assertEquals(instanceExpecteds.get(i),instance, "not equals: idx"+i);
 		}
 	}
 }
