@@ -2,10 +2,7 @@ package json_converter.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +63,24 @@ public class TypeContainerTest {
 				);
 		List<Type> typeExpecteds = List.of(
 				int.class
+				);
+		for(int i = 0; i < types.size(); ++i) {
+			assertEquals(typeExpecteds.get(i), types.get(i), "not equals: idx " + i);
+		}
+	}
+	
+	@Test
+	public void getTypeParameterContainers() {
+		TypeContainer tc = new TypeContainer(new TypeToken<Map<String,Integer>>() {});
+		TypeContainer[] parameterTc = tc.getTypeParameterContainers();
+		List<Type> types = List.of(
+				parameterTc[0].getBaseClass(),
+				parameterTc[1].getBaseClass()
+				);
+		
+		List<Type> typeExpecteds = List.of(
+				String.class,
+				Integer.class
 				);
 		for(int i = 0; i < types.size(); ++i) {
 			assertEquals(typeExpecteds.get(i), types.get(i), "not equals: idx " + i);
