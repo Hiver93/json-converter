@@ -6,12 +6,16 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class TypeContainer {
 	private Type type;
-	private Map<String,Type> typeVariableMap;
+	private Map<String,Type> typeVariableMap = new HashMap<String, Type>();
 	public TypeContainer(Type type) {
 		this.type = type;
+		if(type instanceof ParameterizedType) {
+			setTypeVariableMap();
+		}
 	}
 	
 	private TypeContainer(Type type, Map<String,Type> typeVariableMap) {
@@ -25,8 +29,7 @@ public class TypeContainer {
 	}
 	
 	private void setTypeVariableMap() {
-		typeVariableMap = new HashMap<>();
-		TypeVariable<?>[] typeVars = (((ParameterizedType)this.type).getRawType()).getClass().getTypeParameters();
+		TypeVariable<?>[] typeVars = (((Class<?>)((ParameterizedType)this.type).getRawType())).getTypeParameters();
 		Type[] typeArgs = ((ParameterizedType)this.type).getActualTypeArguments();
 		for(int i = 0; i < typeVars.length; ++i) {
 			this.typeVariableMap.put(typeVars[i].getTypeName(),typeArgs[i]);
@@ -36,6 +39,9 @@ public class TypeContainer {
 	public Class<?> getBaseClass() {
 		if(this.type instanceof ParameterizedType) {
 			return (Class<?>)((ParameterizedType)this.type).getRawType();
+		}
+		else if(this.type instanceof TypeVariable) {
+			return ((TypeVariable<?>)this.type).getClass();
 		}
 		return (Class<?>)this.type;
 	}
@@ -54,6 +60,13 @@ public class TypeContainer {
 			type = typeVariableMap.get(type);
 		}
 		return new TypeContainer(type, typeVariableMap);
+	}
+	
+	public TypeContainer[] getTypeParameterContainers() {
+		TypeVariable<?>[] typeVars = getBaseClass().getTypeParameters();
+		return Stream.of(typeVars)
+			.map(v -> typeVariableMap.containsKey(v.getTypeName()) ? new TypeContainer(typeVariableMap.get(v.getTypeName()),typeVariableMap) : new TypeContainer(v))
+			.toArray(TypeContainer[]::new);
 	}
 	
 }
