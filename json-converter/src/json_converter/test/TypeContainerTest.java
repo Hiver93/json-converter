@@ -70,4 +70,19 @@ public class TypeContainerTest {
 		}
 	}
 	
+	@Test
+	public void getComponentTypeContainer() {
+//		TypeContainer typeContainer = new TypeContainer(new TypeToken<MyClass<Integer>[]>() {});
+		List<Type> types = List.of(
+//				typeContainer.getComponentTypeContainer().getBaseClass()
+				new TypeContainer(int[].class).getComponentTypeContainer().getBaseClass()
+				);
+		List<Type> typeExpecteds = List.of(
+				int.class
+				);
+		for(int i = 0; i < types.size(); ++i) {
+			assertEquals(typeExpecteds.get(i), types.get(i), "not equals: idx " + i);
+		}
+	}
+	
 }	
