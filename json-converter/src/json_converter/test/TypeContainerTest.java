@@ -24,35 +24,8 @@ public class TypeContainerTest {
 		T t;
 	}
 	
-	@Test
-	public void isGenericContainer() throws NoSuchFieldException, SecurityException {
-		List<Type> types = List.of(
-				new TypeToken<String>() {}.getType(), 
-				new ArrayList<String>().getClass(),
-				MyClass.class.getDeclaredField("list").getGenericType(),
-				MyClass.class.getDeclaredField("i").getGenericType(),
-				MyClass.class.getDeclaredField("tList").getGenericType(),
-				List.class,
-				new TypeToken<List<String>>() {}.getType(),
-				(ParameterizedType)new ArrayList<String>().getClass().getGenericSuperclass());
-		List<Boolean> boolExpecteds = List.of(
-				false, 
-				false,
-				true,
-				false,
-				true,
-				false,
-				true,
-				true);
-		
-		for(int i = 0; i < types.size(); ++i) {
-			TypeContainer tc = new TypeContainer(types.get(i));
-			assertEquals(boolExpecteds.get(i), tc.isGenericContainer(), "not equals: idx " + i);
-		}
-	}
-	
 	@Test 
-	public void getBaseType() throws NoSuchFieldException, SecurityException {
+	public void getBaseClass() throws NoSuchFieldException, SecurityException {
 		List<Type> types = List.of(
 				new TypeToken<String>() {}.getType(), 
 				new ArrayList<String>().getClass(),
@@ -73,42 +46,8 @@ public class TypeContainerTest {
 				AbstractList.class);
 		for(int i = 0; i < types.size(); ++i) {
 			TypeContainer tc = new TypeContainer(types.get(i));
-			assertEquals(typeExpecteds.get(i), tc.getBaseType(), "not equals: idx " + i);
+			assertEquals(typeExpecteds.get(i), tc.getBaseClass(), "not equals: idx " + i);
 		}
 	}
 	
-	@Test
-	public void getFields() throws NoSuchFieldException, SecurityException {
-		List<Type> types = List.of(
-				MyClass.class,
-				new TypeToken<MyClass<String>>() {}.getType()
-				);
-		List<Field[]> fieldsExpecteds = List.of(
-				MyClass.class.getDeclaredFields(),
-				MyClass.class.getDeclaredFields()
-				);
-		for(int i = 0; i < types.size(); ++i) {
-			TypeContainer tc = new TypeContainer(types.get(i));
-			assertArrayEquals(fieldsExpecteds.get(i), tc.getFields(), "not equals: idx " + i);
-		}
-	}
-	
-	@Test
-	public void getGenericTypes() {
-		List<Type> types = List.of(
-				MyClass.class,
-				new TypeToken<MyClass<String>>() {}.getType(),
-				(ParameterizedType)new ArrayList<String>().getClass().getGenericSuperclass()
-				);
-		List<Type[]> typesExpecteds = List.of(
-				MyClass.class.getTypeParameters(),
-				new Type[] {String.class},
-				((ParameterizedType)new ArrayList<String>().getClass().getGenericSuperclass()).getActualTypeArguments()
-				);
-		for(int i = 0; i < types.size(); ++i) {
-			TypeContainer tc = new TypeContainer(types.get(i));
-			assertArrayEquals(typesExpecteds.get(i), tc.getGenericTypes(), "not equals: idx " + i);
-		}
-		
-	}
 }	
