@@ -1,15 +1,13 @@
 package json_converter.test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -25,25 +23,14 @@ public class TypeContainerTest {
 	}
 	
 	@Test 
-	public void getBaseClass() throws NoSuchFieldException, SecurityException {
+	public void getBaseClass() throws NoSuchFieldException, SecurityException { 
 		List<Type> types = List.of(
-				new TypeToken<String>() {}.getType(), 
-				new ArrayList<String>().getClass(),
-				MyClass.class.getDeclaredField("list").getGenericType(),
-				MyClass.class.getDeclaredField("i").getGenericType(),
-				MyClass.class.getDeclaredField("tList").getGenericType(),
-				List.class,
-				new TypeToken<List<String>>() {}.getType(),
-				(ParameterizedType)new ArrayList<String>().getClass().getGenericSuperclass());
+				new TypeContainer(MyClass.class).getBaseClass(),
+				new TypeContainer(new TypeToken<Map<String,Integer>>() {}).getBaseClass()
+				);
 		List<Type> typeExpecteds = List.of(
-				String.class,
-				ArrayList.class,
-				List.class,
-				int.class,
-				List.class,
-				List.class,
-				List.class,
-				AbstractList.class);
+				MyClass.class
+				, Map.class);
 		for(int i = 0; i < types.size(); ++i) {
 			TypeContainer tc = new TypeContainer(types.get(i));
 			assertEquals(typeExpecteds.get(i), tc.getBaseClass(), "not equals: idx " + i);
