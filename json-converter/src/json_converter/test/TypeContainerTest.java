@@ -66,8 +66,7 @@ public class TypeContainerTest {
 				Integer.class
 				);
 		for(int i = 0; i < types.size(); ++i) {
-			TypeContainer tc = new TypeContainer(types.get(i));
-			assertEquals(typeExpecteds.get(i), types, "not equals: idx " + i);
+			assertEquals(typeExpecteds.get(i), types.get(i), "not equals: idx " + i);
 		}
 	}
 	
