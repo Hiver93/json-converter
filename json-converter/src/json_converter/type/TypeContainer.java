@@ -13,19 +13,27 @@ public class TypeContainer {
 	private Map<String,Type> typeVariableMap = new HashMap<String, Type>();
 	public TypeContainer(Type type) {
 		this.type = type;
-		if(type instanceof ParameterizedType) {
+		if(this.type instanceof TypeVariable) {
+			this.type = restoreTypeVariable(this.type);			
+		}
+		if(this.type instanceof ParameterizedType) {
 			setTypeVariableMap();
 		}
 	}
 	
 	private TypeContainer(Type type, Map<String,Type> typeVariableMap) {
 		this.type = type;
-		this.typeVariableMap = typeVariableMap;
+		this.typeVariableMap.putAll(typeVariableMap);
+		if(this.type instanceof TypeVariable) {
+			this.type = restoreTypeVariable(this.type);			
+		}
+		if(this.type instanceof ParameterizedType) {
+			setTypeVariableMap();
+		}
 	}
 	
 	public TypeContainer(TypeToken<?> typeToken) {
-		this.type = typeToken.getType();
-		setTypeVariableMap();
+		this(typeToken.getType());
 	}
 	
 	private void setTypeVariableMap() {
@@ -65,8 +73,17 @@ public class TypeContainer {
 	public TypeContainer[] getTypeParameterContainers() {
 		TypeVariable<?>[] typeVars = getBaseClass().getTypeParameters();
 		return Stream.of(typeVars)
-			.map(v -> typeVariableMap.containsKey(v.getTypeName()) ? new TypeContainer(typeVariableMap.get(v.getTypeName()),typeVariableMap) : new TypeContainer(v))
+			.map(v -> typeVariableMap.containsKey(v.getTypeName()) ? 
+			new TypeContainer(restoreTypeVariable(typeVariableMap.get(v.getTypeName())),typeVariableMap) : new TypeContainer(v))
 			.toArray(TypeContainer[]::new);
+	}
+	
+	private Type restoreTypeVariable(Type type) {
+		if(type instanceof TypeVariable && typeVariableMap.containsKey(this.type.getTypeName())) {
+			type = typeVariableMap.get(this.type.getTypeName());
+			type = restoreTypeVariable(type);
+		}
+		return type;
 	}
 	
 }
