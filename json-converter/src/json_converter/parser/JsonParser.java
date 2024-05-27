@@ -25,34 +25,34 @@ public class JsonParser {
 		}
 		T object = null;
 		try {
-			if(Map.class.isAssignableFrom(tc.getBaseType())) {
+			if(Map.class.isAssignableFrom(tc.getBaseClass())) {
 				object = mapToMap(jsonStr,tc);
 			}
-			else if(Collection.class.isAssignableFrom(tc.getBaseType())) {
+			else if(Collection.class.isAssignableFrom(tc.getBaseClass())) {
 				object = mapToCollection(jsonStr, tc);
 			}
-			else if(tc.getBaseType().isArray()) {
+			else if(tc.getBaseClass().isArray()) {
 				object = mapToArray(jsonStr, tc);
 			}
-			else if(String.class.equals(tc.getBaseType())) {
+			else if(String.class.equals(tc.getBaseClass())) {
 				object = (T)mapToString(jsonStr);
 			}
-			else if(Number.class.isAssignableFrom(tc.getBaseType())) {
+			else if(Number.class.isAssignableFrom(tc.getBaseClass())) {
 				object = (T)mapToNumber(jsonStr, tc);
 			}
-			else if(Character.class.equals(tc.getBaseType())) {
+			else if(Character.class.equals(tc.getBaseClass())) {
 				object = (T)mapToChar(jsonStr);
 			}
-			else if(Boolean.class.equals(tc.getBaseType())) {
+			else if(Boolean.class.equals(tc.getBaseClass())) {
 				object = (T)mapToBool(jsonStr);
 			}
-			else if(tc.getBaseType().isPrimitive()) {
+			else if(tc.getBaseClass().isPrimitive()) {
 				object = mapToPrimitive(jsonStr,tc);
 			}
-			else if(TypeVariable.class.isAssignableFrom(tc.getBaseType())) {
+			else if(TypeVariable.class.isAssignableFrom(tc.getBaseClass())) {
 				object = parse(jsonStr);
 			}
-			else if(!tc.getBaseType().getName().startsWith("java")){
+			else if(!tc.getBaseClass().getName().startsWith("java")){
 				object = mapToObject(jsonStr,tc);
 			}
 			else {
@@ -74,11 +74,11 @@ public class JsonParser {
 	
 	private <T>T mapToObject(String jsonStr, TypeContainer tc) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(jsonStr);
-		T t = (T)InstanceFactory.newInstance(tc.getBaseType());
+		T t = (T)InstanceFactory.newInstance(tc.getBaseClass());
 		while(tokenizer.hasMoreTokens()) {
-			Field field = tc.getBaseType().getDeclaredField(parse(tokenizer.next(),new TypeContainer(String.class)));
+			Field field = tc.getBaseClass().getDeclaredField(parse(tokenizer.next(),new TypeContainer(String.class)));
 			field.setAccessible(true);
-			field.set(t, parse(tokenizer.next(), new TypeContainer(field.getGenericType())));
+			field.set(t, parse(tokenizer.next(), tc.getFieldTypeContainer(field)));
 		}
 		return t;
 	}
@@ -86,11 +86,11 @@ public class JsonParser {
 	private <T>T mapToArray(String jsonStr, TypeContainer tc) {
 		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(jsonStr);
 		List list = InstanceFactory.newInstance(List.class);
-		TypeContainer componentTc = new TypeContainer(tc.getBaseType().getComponentType());
+		TypeContainer componentTc = new TypeContainer(tc.getBaseClass().getComponentType());
 		while(tokenizer.hasMoreTokens()) {
 			list.add(parse(tokenizer.next(),componentTc));
 		}
-		T arr = (T)Array.newInstance(componentTc.getBaseType(), list.size());
+		T arr = (T)Array.newInstance(componentTc.getBaseClass(), list.size());
 		for(int i = 0; i < list.size(); ++i) {
 			Array.set(arr, i, list.get(i));
 		}
@@ -98,44 +98,33 @@ public class JsonParser {
 	}
 
 	private <T>T mapToPrimitive(String jsonStr, TypeContainer tc) {
-		return (T) parse(jsonStr, new TypeContainer(PrimitiveWrapperMapping.getWrapperByPrimitive(tc.getBaseType())));
+		return (T) parse(jsonStr, new TypeContainer(PrimitiveWrapperMapping.getWrapperByPrimitive(tc.getBaseClass())));
 	}
 
 	private <T>T mapToNumber(String jsonStr, TypeContainer tc) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		Number num = (Number)tc.getBaseType().getDeclaredMethod("valueOf", String.class).invoke(null, jsonStr);
+		Number num = (Number)tc.getBaseClass().getDeclaredMethod("valueOf", String.class).invoke(null, jsonStr);
 		return (T)num;
 	}
 
 	private <T>T mapToCollection(String jsonStr, TypeContainer tc) {
 		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(jsonStr);
-		T t= (T)InstanceFactory.newInstance(tc.getBaseType());
-		if(tc.getGenericTypes()[0] instanceof TypeVariable) {
-			while(tokenizer.hasMoreTokens()) {
-				((Collection)t).add(parse(tokenizer.next()));
-			}
-		}
-		else {
-			while(tokenizer.hasMoreTokens()) {
-				((Collection)t).add(parse(tokenizer.next(), new TypeContainer(tc.getGenericTypes()[0])));
-			}
+		T t= (T)InstanceFactory.newInstance(tc.getBaseClass());
+		TypeContainer parameterTypeContainer = tc.getTypeParameterContainers()[0];
+		while(tokenizer.hasMoreTokens()) {
+			((Collection)t).add(parse(tokenizer.next(), parameterTypeContainer));
 		}
 		return t;
 	}
 
 	private <T>T mapToMap(String jsonStr, TypeContainer tc) {
 		JsonTokenizer tokenizer = JsonTokenizerFactory.jsonTokenizer(jsonStr);
-		T t = (T) InstanceFactory.newInstance(tc.getBaseType());
+		T t = (T) InstanceFactory.newInstance(tc.getBaseClass());
+		TypeContainer[] parameterTypeContainers = tc.getTypeParameterContainers();
 		while(tokenizer.hasMoreTokens()) {
 			Object key  = null;
 			Object value = null;
-			if(tc.getGenericTypes()[0] instanceof TypeVariable) {
-				key = parse(tokenizer.next());
-				value = parse(tokenizer.next());
-			}
-			else {
-				key = parse(tokenizer.next(), new TypeContainer(tc.getGenericTypes()[0]));
-				value = parse(tokenizer.next(), new TypeContainer(tc.getGenericTypes()[1]));
-			}
+			key = parse(tokenizer.next(), parameterTypeContainers[0]);
+			value = parse(tokenizer.next(), parameterTypeContainers[1]);			
 			((Map)t).put(key, value);
 		}
 		return t;
